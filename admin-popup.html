@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Panel Admin — Fast Food Service</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* Estilos específicos para ventana popup */
+        body { min-width: 900px; }
+        .popup-header {
+            position: sticky; top: 0; z-index: 50;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(51, 65, 85, 0.5);
+        }
+        .window-controls {
+            display: flex; gap: 6px;
+        }
+        .window-btn {
+            width: 12px; height: 12px; border-radius: 50%;
+            cursor: pointer; transition: opacity 0.2s;
+        }
+        .window-btn:hover { opacity: 0.7; }
+        .btn-close { background: #ef4444; }
+        .btn-min { background: #f59e0b; }
+        .btn-max { background: #10b981; }
+    </style>
+<base target="_blank">
+</head>
+<body class="text-slate-200 p-4 md:p-6 pb-16 bg-slate-900 min-h-screen">
+
+    <!-- ─── HEADER CON CONTROLES DE VENTANA ─── -->
+    <header class="popup-header rounded-xl mb-6 px-5 py-3">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center gap-4">
+                <!-- Controles tipo macOS -->
+                <div class="window-controls">
+                    <div class="window-btn btn-close" onclick="window.close()" title="Cerrar"></div>
+                    <div class="window-btn btn-min" onclick="window.blur()" title="Minimizar"></div>
+                    <div class="window-btn btn-max" onclick="toggleFullscreen()" title="Pantalla completa"></div>
+                </div>
+                <div class="w-px h-5 bg-slate-700"></div>
+                <div>
+                    <p class="text-violet-400 text-[9px] font-black uppercase tracking-[0.3em] mb-0.5">Administración</p>
+                    <h1 class="text-3xl font-black text-white uppercase leading-none"
+                        style="font-family:'Bebas Neue',sans-serif; letter-spacing:0.04em;">
+                        Panel Admin
+                    </h1>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <span class="text-[10px] text-slate-500">
+                    Sesión: <span id="adm-username" class="text-white font-bold">—</span>
+                </span>
+                <button onclick="window.close()"
+                    class="bg-slate-700 hover:bg-red-900/40 hover:text-red-400 text-slate-300
+                           px-3 py-2 rounded-lg text-[10px] font-black uppercase transition-all
+                           border border-slate-600 flex items-center gap-2">
+                    ✕ Cerrar Ventana
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ─── STAT CARDS ─── -->
+    <div class="max-w-7xl mx-auto grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
+
+        <div class="stat-card" style="--stat-accent:#06b6d4;">
+            <p class="stat-value" id="adm-completed">—</p>
+            <p class="stat-label">Pedidos<br>Completados</p>
+            <span class="text-2xl mt-2 block opacity-30">✅</span>
+        </div>
+
+        <div class="stat-card" style="--stat-accent:#f59e0b;">
+            <p class="stat-value" id="adm-active">—</p>
+            <p class="stat-label">Pedidos<br>Activos</p>
+            <span class="text-2xl mt-2 block opacity-30">⏳</span>
+        </div>
+
+        <div class="stat-card" style="--stat-accent:#10b981;">
+            <p class="stat-value text-emerald-400 text-2xl" id="adm-revenue">$0</p>
+            <p class="stat-label">Ingresos<br>Totales</p>
+            <span class="text-2xl mt-2 block opacity-30">💰</span>
+        </div>
+
+        <div class="stat-card" style="--stat-accent:#8b5cf6;">
+            <p class="stat-value text-violet-400 text-2xl" id="adm-avg">$0</p>
+            <p class="stat-label">Promedio<br>por Pedido</p>
+            <span class="text-2xl mt-2 block opacity-30">📊</span>
+        </div>
+
+        <div class="stat-card" style="--stat-accent:#f43f5e;">
+            <p class="stat-value" id="adm-employees">—</p>
+            <p class="stat-label">Empleados<br>Registrados</p>
+            <span class="text-2xl mt-2 block opacity-30">👥</span>
+        </div>
+
+    </div>
+
+    <!-- ─── DOS TABLAS ─── -->
+    <div class="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+
+        <!-- Tabla: Pedidos Completados -->
+        <div class="card">
+            <div class="flex justify-between items-center mb-5">
+                <div>
+                    <h2 class="text-white font-black uppercase text-sm tracking-wider">Pedidos Completados</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Últimos 25 despachados</p>
+                </div>
+                <span class="text-xs text-cyan-400 font-bold bg-cyan-400/10 border border-cyan-400/20
+                             px-2 py-1 rounded-lg" id="adm-completed-badge">0</span>
+            </div>
+            <div class="overflow-x-auto" style="max-height: 360px; overflow-y: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Mesa</th>
+                            <th>Mesero</th>
+                            <th>Ítems</th>
+                            <th>Total</th>
+                            <th>Hora</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adm-orders-tbody">
+                        <tr>
+                            <td colspan="6" class="text-center py-10 text-slate-500 text-sm">
+                                Cargando...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Tabla: Empleados -->
+        <div class="card">
+            <div class="flex justify-between items-center mb-5">
+                <div>
+                    <h2 class="text-white font-black uppercase text-sm tracking-wider">Empleados Registrados</h2>
+                    <p class="text-xs text-slate-500 mt-0.5">Personal del sistema</p>
+                </div>
+                <span class="text-xs text-violet-400 font-bold bg-violet-400/10 border border-violet-400/20
+                             px-2 py-1 rounded-lg" id="adm-employees-badge">0</span>
+            </div>
+            <div class="overflow-x-auto" style="max-height: 360px; overflow-y: auto;">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Empleado</th>
+                            <th>Teléfono</th>
+                            <th>Registro</th>
+                            <th>Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="adm-emp-tbody">
+                        <tr>
+                            <td colspan="4" class="text-center py-10 text-slate-500 text-sm">
+                                Cargando...
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ─── PEDIDOS ACTIVOS ─── -->
+    <div class="max-w-7xl mx-auto card mb-6">
+        <div class="flex justify-between items-center mb-5">
+            <div>
+                <h2 class="text-white font-black uppercase text-sm tracking-wider">Pedidos Activos en Cocina</h2>
+                <p class="text-xs text-slate-500 mt-0.5">Estado en tiempo real</p>
+            </div>
+            <span id="adm-active-badge"
+                  class="text-xs text-amber-400 font-bold bg-amber-400/10 border border-amber-400/20
+                         px-2 py-1 rounded-lg">0</span>
+        </div>
+        <div id="adm-active-orders" class="text-center py-8 text-slate-500 text-sm">
+            Sin pedidos activos
+        </div>
+    </div>
+
+    <!-- ─── ZONA PELIGROSA ─── -->
+    <div class="max-w-7xl mx-auto">
+        <div class="border border-red-900/40 rounded-2xl p-5 bg-red-950/10">
+            <h3 class="text-red-400 font-black uppercase text-xs tracking-widest mb-2">⚠️ Zona Peligrosa</h3>
+            <p class="text-slate-500 text-xs mb-4">
+                Estas acciones son irreversibles. Úsalas solo para reiniciar el sistema en demostraciones.
+            </p>
+            <div class="flex flex-wrap gap-3">
+                <button onclick="clearOrders()"
+                    class="bg-red-900/30 hover:bg-red-800/40 text-red-400 border border-red-900/40
+                           px-4 py-2 rounded-xl text-xs font-black uppercase transition-all">
+                    Limpiar Pedidos
+                </button>
+                <button onclick="clearAllData()"
+                    class="bg-red-700 hover:bg-red-600 text-white px-4 py-2 rounded-xl
+                           text-xs font-black uppercase transition-all">
+                    Reiniciar Todo el Sistema
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Trigger oculto para inicializar el panel -->
+    <div id="adm-panel-trigger" class="hidden"></div>
+
+    <div id="creator-watermark">Fast Food Service © SENA 2025</div>
+
+    <script src="registro.js"></script>
+    <script>
+        // ── Protección de acceso ──
+        (function() {
+            const session = localStorage.getItem('ff_session');
+            if (!session) {
+                window.close();
+                return;
+            }
+            // Mostrar nombre de usuario en header
+            const nameEl = document.getElementById('adm-username');
+            if (nameEl) nameEl.textContent = session;
+        })();
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(() => {});
+            } else {
+                document.exitFullscreen().catch(() => {});
+            }
+        }
+
+        // Auto-refresh cada 5 segundos
+        setInterval(() => {
+            if (document.visibilityState !== 'hidden') {
+                loadAdminPanel();
+            }
+        }, 5000);
+    </script>
+</body>
+</html>
