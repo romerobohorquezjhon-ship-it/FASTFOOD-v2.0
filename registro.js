@@ -1,12 +1,4 @@
-// ============================================================
-//  Fast Food Service — registro.js
-//  Toda la lógica del frontend. Requiere api.php en el backend.
-// ============================================================
-
-// ─────────────────────────────────────────
-// TOAST
-// ─────────────────────────────────────────
-function showToast(msg, type = 'success') {
+    function showToast(msg, type = 'success') {
     document.querySelectorAll('.ff-toast').forEach(t => t.remove());
     const cfg = {
         success: { bg: 'linear-gradient(135deg,#059669,#047857)', icon: '✅' },
@@ -38,9 +30,9 @@ function showToast(msg, type = 'success') {
     }, 3200);
 }
 
-// ─────────────────────────────────────────
+
 // HELPERS
-// ─────────────────────────────────────────
+
 function formatCOP(n) {
     return '$' + Number(n).toLocaleString('es-CO');
 }
@@ -50,10 +42,7 @@ function nextOrderNum() {
     localStorage.setItem('ff_counter', n);
     return String(n).padStart(3, '0');
 }
-
-// ─────────────────────────────────────────
 // SESIÓN
-// ─────────────────────────────────────────
 function getSession()  { return localStorage.getItem('ff_session'); }
 function requireAuth() {
     if (!getSession()) { window.location.href = 'index.html'; return false; }
@@ -64,10 +53,7 @@ function logout() {
     localStorage.removeItem('ff_counter');
     window.location.href = 'index.html';
 }
-
-// ─────────────────────────────────────────
 // MENÚ
-// ─────────────────────────────────────────
 const MENU = [
     {
         categoria: "🍔 Hamburguesas",
@@ -105,10 +91,7 @@ const MENU = [
         ]
     }
 ];
-
-// ─────────────────────────────────────────
 // MESERO — Pedido
-// ─────────────────────────────────────────
 let pedido = [];
 
 function renderMenu() {
@@ -251,9 +234,8 @@ async function submitOrder() {
 const enviarPedido  = submitOrder;
 const limpiarPedido = clearOrder;
 
-// ─────────────────────────────────────────
 // COCINA
-// ─────────────────────────────────────────
+
 const ESTADO_CFG = {
     pendiente:  {
         label:  'Pendiente',
@@ -392,9 +374,8 @@ function updateKitchenStats(orders) {
     });
 }
 
-// ─────────────────────────────────────────
 // ADMIN
-// ─────────────────────────────────────────
+
 async function loadAdminPanel() {
     try {
         // Stats
@@ -575,12 +556,11 @@ function exportarDatos() {
     });
 }
 
-// ─────────────────────────────────────────
 // DOMContentLoaded — INICIALIZACIÓN
-// ─────────────────────────────────────────
+
 document.addEventListener('DOMContentLoaded', () => {
 
-    // ── LOGIN ──────────────────────────────
+    // ── LOGIN 
     const loginForm = document.getElementById('loginForm');
     if (loginForm) {
         // Mostrar contador de empleados registrados
@@ -626,7 +606,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── REGISTRO ───────────────────────────
+    // ── REGISTRO 
     const regForm = document.getElementById('regForm');
     if (regForm && !regForm.dataset.handled) {
         regForm.dataset.handled = 'true';
@@ -672,7 +652,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // ── ROLES ──────────────────────────────
+    // ── ROLES 
     const nombreEl = document.getElementById('nombreUsuario');
     if (nombreEl) {
         if (!requireAuth()) return;
@@ -682,7 +662,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (avatar) avatar.textContent = session.charAt(0).toUpperCase();
     }
 
-    // ── MESERO ─────────────────────────────
+    // ── MESERO 
     const userNameEl = document.getElementById('userName');
     if (userNameEl) {
         if (!requireAuth()) return;
@@ -694,7 +674,7 @@ document.addEventListener('DOMContentLoaded', () => {
         renderTicket();
     }
 
-    // ── ADMIN ──────────────────────────────
+    // ── ADMIN 
     const adminEl = document.getElementById('adm-panel-trigger');
     if (adminEl) {
         if (!requireAuth()) return;
@@ -705,7 +685,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 });
 
-// ── COCINA ──────────────────────────────────
+// ── COCINA 
 if (document.getElementById('listaPedidos')) {
     if (!localStorage.getItem('ff_session')) window.location.href = 'index.html';
     window.addEventListener('load', loadOrders);
