@@ -1,15 +1,10 @@
--- ============================================================
---  Fast Food Service — Script de Base de Datos
---  Ejecutar en phpMyAdmin o consola MySQL de XAMPP
--- ============================================================
-
 CREATE DATABASE IF NOT EXISTS fast_food_db
     CHARACTER SET utf8mb4
     COLLATE utf8mb4_unicode_ci;
 
 USE fast_food_db;
 
--- ── TABLA: usuarios ─────────────────────────────────────────
+-- ── TABLA: usuarios 
 CREATE TABLE IF NOT EXISTS usuarios (
     id             INT AUTO_INCREMENT PRIMARY KEY,
     nombre         VARCHAR(60)  NOT NULL UNIQUE,
@@ -20,7 +15,7 @@ CREATE TABLE IF NOT EXISTS usuarios (
     fechaRegistro  TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ── TABLA: menu ─────────────────────────────────────────────
+-- ── TABLA: menu 
 CREATE TABLE IF NOT EXISTS menu (
     id          INT AUTO_INCREMENT PRIMARY KEY,
     nombre      VARCHAR(100) NOT NULL,
@@ -30,7 +25,7 @@ CREATE TABLE IF NOT EXISTS menu (
     orden       INT          NOT NULL DEFAULT 0
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ── TABLA: pedidos ──────────────────────────────────────────
+-- ── TABLA: pedidos
 CREATE TABLE IF NOT EXISTS pedidos (
     id            INT AUTO_INCREMENT PRIMARY KEY,
     numero        VARCHAR(10)  NOT NULL DEFAULT '000',
@@ -44,7 +39,7 @@ CREATE TABLE IF NOT EXISTS pedidos (
     FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ── TABLA: pedido_items ──────────────────────────────────────
+-- ── TABLA: pedido_items 
 CREATE TABLE IF NOT EXISTS pedido_items (
     id               INT AUTO_INCREMENT PRIMARY KEY,
     pedido_id        INT NOT NULL,
@@ -55,7 +50,7 @@ CREATE TABLE IF NOT EXISTS pedido_items (
     FOREIGN KEY (menu_id)   REFERENCES menu(id)    ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- ── DATOS DE EJEMPLO: Menú ───────────────────────────────────
+-- ── DATOS DE EJEMPLO: Menú
 INSERT INTO menu (nombre, precio, categoria, disponible, orden) VALUES
 -- Hamburguesas
 ('Hamburguesa Clásica',    12000, 'Hamburguesas', 1, 1),
