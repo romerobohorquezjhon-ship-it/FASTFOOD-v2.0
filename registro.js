@@ -691,3 +691,9 @@ if (document.getElementById('listaPedidos')) {
     window.addEventListener('load', loadOrders);
     setInterval(loadOrders, 3000);
 }
+// ── COCINA ──────────────────────────────────
+if (document.getElementById('listaPedidos')) {
+    if (!localStorage.getItem('ff_session')) window.location.href = 'index.html';
+    window.addEventListener('load', loadOrders);
+    setInterval(loadOrders, 3000);
+}
