@@ -69,3 +69,21 @@ INSERT INTO menu (nombre, precio, categoria, disponible, orden) VALUES
 -- ── USUARIO ADMIN POR DEFECTO (fastfood / 1504) ────────────
 INSERT INTO usuarios (nombre, apellidos, telefono, correo, password) VALUES
 ('fastfood', 'Administrador', '3000000000', 'admin@fastfood.com', '1504');
+
+CREATE TABLE IF NOT EXISTS pedido_items (
+    id              INT AUTO_INCREMENT PRIMARY KEY,
+    pedido_id       INT NOT NULL,
+    menu_id         INT,
+    cantidad        INT NOT NULL DEFAULT 1,
+    precio_unitario INT NOT NULL DEFAULT 0
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE pedido_items
+ADD CONSTRAINT fk_pedidoitems_pedido
+FOREIGN KEY (pedido_id) REFERENCES pedidos(id)
+ON DELETE CASCADE ON UPDATE CASCADE;
+
+ALTER TABLE pedido_items
+ADD CONSTRAINT fk_pedidoitems_menu
+FOREIGN KEY (menu_id) REFERENCES menu(id)
+ON DELETE SET NULL ON UPDATE CASCADE;
